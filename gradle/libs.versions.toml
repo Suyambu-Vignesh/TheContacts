@@ -1,16 +1,20 @@
 [versions]
-activityCompose = "1.9.1"
+activityCompose = "1.9.2"
 agp = "8.4.2"
-kotlin = "1.9.0"
-ksp = "2.0.20-1.0.24"
-composeBom = "2024.08.00"
+composeBom = "2024.09.00"
 coreKtx = "1.13.1"
 espressoCore = "3.6.1"
+hilt = "2.51.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
-lifecycleRuntimeKtx = "2.8.4"
+kotlin = "2.0.0"
+klint = "12.1.1"
+ksp = "2.0.20-1.0.24"
+lifecycleRuntimeKtx = "2.8.5"
 paging = "3.3.2"
 room = "2.6.1"
+workRuntimeKtx = "2.9.1"
+navigationCompose = "2.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,10 +33,15 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-paging = { group = "androidx.paging", name = "paging-runtime", version.ref= "paging" }
 androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+klint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "klint" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
