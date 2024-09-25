@@ -11,6 +11,8 @@ import com.app.contacts.data.source.model.SourceEmail
 import com.app.contacts.data.source.model.SourcePhoneNumber
 import com.app.contacts.init.SingletonFactory
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class ContactSyncWorker(
@@ -20,7 +22,7 @@ class ContactSyncWorker(
         appContext,
         params,
     ) {
-    private val contactRepository: ContactRepository<SourceContact> =
+    private val contactRepository: ContactRepository<kotlin.Result<List<SourceContact>>> =
         SingletonFactory.getContactRepository()
     private val phoneAndEmailRepository: PhoneAndEmailRepository<SourcePhoneNumber, SourceEmail> =
         SingletonFactory.getPhoneAndEmailRepository()
@@ -28,32 +30,23 @@ class ContactSyncWorker(
         SingletonFactory.getContactWriteRepository()
 
     override suspend fun doWork(): Result {
-        return withContext(Dispatchers.Default) {
-            val allContact = contactRepository.getAllContact()
+        return withContext(Dispatchers.IO) {
+            val allContact = contactRepository.getAllContact().catch { }.first()
             val phoneNumbers = phoneAndEmailRepository.getAllPhoneNumbers()
             val emails = phoneAndEmailRepository.getAllEmails()
 
-            var success = true
+            var success = false
 
-            allContact.onSuccess {
-                contactWriteRepository.writeContacts(it)
-            }.onFailure {
-                success = false
-                // todo analytics
-            }
+            allContact.getOrNull()?.let { contacts ->
+                contactWriteRepository.writeContacts(contacts)
+                emails.getOrNull()?.let {
+                    contactWriteRepository.writeEmailIds(it)
+                }
+                phoneNumbers.getOrNull()?.let {
+                    contactWriteRepository.writePhoneNumbers(it)
+                }
 
-            phoneNumbers.onSuccess {
-                contactWriteRepository.writePhoneNumbers(it)
-            }.onFailure {
-                success = false
-                // todo analytics
-            }
-
-            emails.onSuccess {
-                contactWriteRepository.writeEmailIds(it)
-            }.onFailure {
-                success = false
-                // todo analytics
+                success = true
             }
 
             if (success) Result.success() else Result.retry()

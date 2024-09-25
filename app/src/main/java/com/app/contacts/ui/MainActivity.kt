@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.app.contacts.ui.pages.MainActivityScreen
+import com.app.contacts.ui.pages.HomePage
 import com.app.contacts.ui.theme.TheContactsTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TheContactsTheme {
-                MainActivityScreen()
+                HomePage()
             }
         }
     }
@@ -25,6 +25,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     TheContactsTheme {
-        MainActivityScreen()
+        HomePage()
     }
 }

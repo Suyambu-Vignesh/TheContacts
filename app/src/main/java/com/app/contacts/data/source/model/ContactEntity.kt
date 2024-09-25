@@ -64,5 +64,5 @@ data class SourceContactWithDetails(
         parentColumn = "contactId",
         entityColumn = "contactId",
     )
-    val emails: List<SourceContact>,
+    val emails: List<SourceEmail>,
 )

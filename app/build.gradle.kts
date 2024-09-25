@@ -51,6 +51,9 @@ android {
 
 dependencies {
 
+    implementation("androidx.paging:paging-compose:3.3.2")
+    implementation("androidx.startup:startup-runtime:1.1.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

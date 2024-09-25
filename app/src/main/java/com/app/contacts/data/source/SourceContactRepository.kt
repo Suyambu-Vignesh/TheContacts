@@ -11,54 +11,60 @@ import com.app.contacts.data.source.model.SourceContact
 import com.app.contacts.data.source.model.SourceEmail
 import com.app.contacts.data.source.model.SourcePhoneNumber
 import com.app.contacts.init.SingletonFactory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SourceContactRepository(
     private val context: Context,
-) : ContactRepository<SourceContact>,
+) : ContactRepository<Result<List<SourceContact>>>,
     ContactWriteRepository<SourceContact, SourcePhoneNumber, SourceEmail>,
     PhoneAndEmailRepository<SourcePhoneNumber, SourceEmail> {
     private val contactDao by lazy {
         SingletonFactory.getContactDao()
     }
 
-    override suspend fun getAllContact(): Result<List<SourceContact>> {
-        return try {
-            val contacts = ArrayList<SourceContact>()
-            context.contentResolver.query(
-                Contacts.CONTENT_URI,
-                null,
-                null,
-                null,
-                null,
-            )?.use {
-                if (it.count > 0) {
-                    val colIndexContactId = it.getColumnIndex(Contacts._ID)
-                    val colIndexContactName = it.getColumnIndex(Contacts.DISPLAY_NAME)
+    override suspend fun getAllContact(): Flow<Result<List<SourceContact>>> {
+        return flow {
+            try {
+                val contacts = ArrayList<SourceContact>()
+                context.contentResolver.query(
+                    Contacts.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null,
+                )?.use {
+                    if (it.count > 0) {
+                        val colIndexContactId = it.getColumnIndex(Contacts._ID)
+                        val colIndexContactName = it.getColumnIndex(Contacts.DISPLAY_NAME)
 
-                    while (it.moveToNext()) {
-                        val contactId = it.getString(colIndexContactId)
-                        val contactName = it.getString(colIndexContactName)
+                        while (it.moveToNext()) {
+                            val contactId = it.getString(colIndexContactId)
+                            val contactName = it.getString(colIndexContactName)
 
-                        if (contactId != null && contactName != null) {
-                            contacts.add(SourceContact(contactId, contactName))
+                            if (contactId != null && contactName != null) {
+                                contacts.add(SourceContact(contactId, contactName))
+                            }
                         }
                     }
                 }
-            }
 
-            Result.success(contacts)
-        } catch (exe: Exception) {
-            Result.failure(exe)
+                emit(Result.success(contacts))
+            } catch (exe: Exception) {
+            }
         }
     }
 
     override fun writeContacts(contacts: List<SourceContact>) {
+        SingletonFactory.getContactDao().addAllContacts(contacts)
     }
 
     override fun writePhoneNumbers(phoneNumbers: List<SourcePhoneNumber>) {
+        SingletonFactory.getContactDao().addAllPhoneNumbers(phoneNumbers)
     }
 
     override fun writeEmailIds(emailIds: List<SourceEmail>) {
+        SingletonFactory.getContactDao().addAllEmails(emailIds)
     }
 
     override fun getAllPhoneNumbers(): Result<List<SourcePhoneNumber>> {

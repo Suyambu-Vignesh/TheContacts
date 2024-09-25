@@ -31,7 +31,7 @@ object SingletonFactory {
             ).build().getContactDao()
     }
 
-    fun getContactRepository(): ContactRepository<SourceContact> {
+    fun getContactRepository(): ContactRepository<Result<List<SourceContact>>> {
         return sourceContactRepository
     }
 
